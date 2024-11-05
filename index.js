@@ -1,9 +1,102 @@
-// let baseurl = "shadowy-broomstick-p5rqj5qjj7g37wx7-4000.app.github.dev"
+// let baseurl = "redesigned-garbanzo-69rj4797rwr6hxpg-4000.app.github.dev"
 let baseurl = "files.ambersys.app"
+
 let thisurl = `https://${baseurl}/`
 let express = require('express');
 let app = express();
+let fs = require('fs/promises')
+let crypto = require('crypto');
+let hashkey = "ambersys"
 app.use("/assets", express.static(__dirname + "/assets"));
+
+
+function btoa(txt){
+  return Buffer.from(txt, "utf-8").toString('base64')
+}
+
+function atob(txt){
+  return Buffer.from(txt, 'base64').toString("utf-8")
+}
+
+
+
+
+function hash(val){
+  let browns = crypto.createHash('sha256', hashkey).update(val).digest('hex');
+  return browns
+}
+
+async function filecheck(filename){
+  let exists = true;
+  try {
+    await fs.access(`serve/meta/${filename}.json`)
+  } catch (e){
+    exists = false;
+  }
+  return exists
+}
+
+
+
+
+
+
+
+app.get("/api/check/:file", async (req, res)=>{
+  let filename = req.params.file
+  let exists=await filecheck(filename)
+  //exists done
+  if(exists){
+    let data = await fs.readFile(`serve/meta/${filename}.json`, "utf8")
+    data = JSON.parse(data)
+    res.json({
+      exists:true,
+      filetype:data.filetype,
+      locked:data.locked,
+      title:data.title
+    })
+  } else {
+    res.json({
+      exists:false
+    })
+  }
+})
+
+
+app.get("/api/fetch/:file", async (req, res)=>{
+  let filename = req.params.file
+  let exists = await filecheck(filename)
+  //exists done
+  if(exists){
+    let data = await fs.readFile(`serve/meta/${filename}.json`, "utf8")
+    data = JSON.parse(data)
+    if(data.locked){
+      if(req.headers.authentication){
+        let hashedpassword = hash(data.password)
+        let userpass = req.headers.authentication
+        userpass = userpass.slice(7)
+        userpass = hash(atob(userpass))
+        if(userpass===hashedpassword){
+          res.sendFile(`${__dirname}/serve/files/${filename}.${data.extension || data.filetype}`)
+        } else {
+          res.sendFile(`${__dirname}/auth.html`)
+        }
+      } else {
+        res.sendFile(`${__dirname}/auth2.html`)
+      }
+      
+    } else {
+      res.sendFile(`${__dirname}/serve/files/${filename}.${data.extension || data.filetype}`)
+    }
+  } else {
+    res.status(404).end("ERROR 404: File not found. This should absolutely NOT happen. If it did, go find whoever made this and show this to them...")
+  }
+})
+
+
+
+
+
 app.get('/', (req, res, next)=>{
     res.send(`<!DOCTYPE html>
   <html>
@@ -64,6 +157,9 @@ app.get('/', (req, res, next)=>{
 
   </html>`)
 })
+
+
+
 app.get('/:src/:id', (req, res) =>{
   let titlev = "Ambersys Files"
   let src=req.params.src
@@ -90,47 +186,18 @@ app.get('/:src/:id', (req, res) =>{
       if(filepath.startsWith('/')){
         filepath = filepath.slice(1)
       }
-      titlev = `${filepath.split('/')[filepath.split('/').length-1]} - Ambersys Files`
-      viewer=`File Viewer<br> <button><a href="${thisurl}">Home</a></button><br>
-      <iframe id="viewr" src="${thisurl}assets/host/${filepath}"></iframe>`
-      viewer +=`
-      <button><a target="_blank" href="${thisurl}assets/host/${filepath}">Open in a new tab</a></button>
-      <button onclick="fs()">Fullscreen</button>
-      <button onclick="dl()">Download</button>
-      <script>
-      function download_file(fileURL, fileName) {
-// for non-IE
-if (!window.ActiveXObject) {
-    var save = document.createElement('a');
-    save.href = fileURL;
-    save.target = '_blank';
-    var filename = fileURL.substring(fileURL.lastIndexOf('/')+1);
-    save.download = fileName || filename;
-       if ( navigator.userAgent.toLowerCase().match(/(ipad|iphone|safari)/) && navigator.userAgent.search("Chrome") < 0) {
-            document.location = save.href; 
-// window event not working here
-        }else{
-            var evt = new MouseEvent('click', {
-                'view': window,
-                'bubbles': true,
-                'cancelable': false
-            });
-            save.dispatchEvent(evt);
-            (window.URL || window.webkitURL).revokeObjectURL(save.href);
-        }   
-}
+      filepath = filepath.split(".")
+      filepath.pop()
+      filepath = filepath.join(".")
 
-// for IE < 11
-else if ( !! window.ActiveXObject && document.execCommand)     {
-    var _window = window.open(fileURL, '_blank');
-    _window.document.close();
-    _window.document.execCommand('SaveAs', true, fileName || fileURL)
-    _window.close();
-}
-}
-      function dl(){
-        download_file("${thisurl}assets/host/${filepath}", "${filepath.split('/')[filepath.split('/').length-1]}")
-      }
+      titlev = `File Loading... - Ambersys Files`
+      viewer=`File Viewer<br> <button><a href="/">Home</a></button><br>
+      <iframe id="viewr" src="/assets/load.html"></iframe>`
+      viewer +=`
+      <button><a id="newtab" target="_blank" href="#">Open in a new tab</a></button>
+      <button onclick="fs()">Fullscreen</button>
+      <button><a id="dl" href = "#" download>Download</a></button>
+      <script>
       function fs(){
         let elem = document.getElementById("viewr")
         if (elem.requestFullscreen) {
@@ -141,6 +208,35 @@ else if ( !! window.ActiveXObject && document.execCommand)     {
           elem.msRequestFullscreen();
         }
       }
+  function populateIframe(iframe, url, headers) {
+ fetch(url, {method:"GET", headers:headers}).then(res=>{console.log("1st stage done"); return res.blob()}).then(blob=>{
+  console.log ("2nd stage done!")
+  let bloburl = URL.createObjectURL(blob);
+  iframe.src=bloburl
+  //+"#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&scrollbar=0"
+  document.getElementById("newtab").href=bloburl
+  document.getElementById("dl").href=bloburl
+  
+ })
+  }
+      </script>
+      <script>
+
+        async function main(){
+            
+            let obj = await fetch("/api/check/${filepath}")
+            obj = await obj.json()
+            document.title=obj.title + " - Ambersys Files"
+            document.getElementById("dl").setAttribute("download", obj.title+"."+obj.filetype)
+            if(obj.locked){
+                let userpass = window.prompt("This file is password protected. Please enter the password")
+                populateIframe(document.querySelector('#viewr'), "/api/fetch/${filepath}", {"Authentication":"Bearer "+btoa(userpass)})
+            } else {
+                //#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&scrollbar=0
+                populateIframe(document.querySelector('#viewr'), "/api/fetch/${filepath}", {})
+            }
+        }
+        main()
       </script>
       `
     } else {
