@@ -315,6 +315,7 @@ app.get('/:src/:id', (req, res) =>{
     <div id='viewer' style='text-align:center;width:100%; align-items: center; align-content: center;'>
       ${viewer}
     </div>
+    v1.28
   <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="41ly3tw2brykru7"></script>
 </body>
 
