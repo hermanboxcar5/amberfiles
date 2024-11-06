@@ -1,7 +1,11 @@
 // let baseurl = "redesigned-garbanzo-69rj4797rwr6hxpg-4000.app.github.dev"
-let baseurl = "files.ambersys.app"
+// let baseurl = "files.ambersys.app"
 
-let thisurl = `https://${baseurl}/`
+// let thisurl = `https://${baseurl}/`
+
+let root = __dirname
+// let root = ""
+
 let express = require('express');
 let app = express();
 let fs = require('fs/promises')
@@ -29,7 +33,7 @@ function hash(val){
 async function filecheck(filename){
   let exists = true;
   try {
-    await fs.access(`serve/meta/${filename}.json`)
+    await fs.access(`${root}/serve/meta/${filename}.json`)
   } catch (e){
     exists = false;
   }
@@ -82,7 +86,7 @@ app.get("/api/fetch/:file", async (req, res)=>{
           res.sendFile(`${__dirname}/auth.html`)
         }
       } else {
-        res.sendFile(`${__dirname}/auth2.html`)
+        res.sendFile(`${root}/auth2.html`)
       }
       
     } else {
@@ -226,28 +230,33 @@ app.get('/:src/:id', (req, res) =>{
             
             let obj = await fetch("/api/check/${filepath}")
             obj = await obj.json()
-            document.title=obj.title + " - Ambersys Files"
-            document.getElementById("dl").setAttribute("download", obj.title+"."+obj.filetype)
-            if(obj.locked){
+            if(obj.exists){
+              document.title=obj.title + " - Ambersys Files"
+              document.getElementById("dl").setAttribute("download", obj.title+"."+obj.filetype)
+              if(obj.locked){
                 let userpass = window.prompt("This file is password protected. Please enter the password")
                 populateIframe(document.querySelector('#viewr'), "/api/fetch/${filepath}", {"Authentication":"Bearer "+btoa(userpass)})
-            } else {
+              } else {
                 //#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&messages=0&scrollbar=0
                 populateIframe(document.querySelector('#viewr'), "/api/fetch/${filepath}", {})
+              }
+            } else {
+              populateIframe(document.querySelector('#viewr'), "/assets/fail.html", {})
             }
+            
         }
         main()
       </script>
       `
     } else {
         viewer=`<h1>Error: Provide Valid Source</h1>
-        <button><a href="${thisurl}">Home</a></button>
+        <button><a href="/">Home</a></button>
         `
     }
   } else {
     viewer=`<h1>Welcome to Ambersys Files.</h1> <br>
     That's an invalid link.<br>
-    <button><a href="${thisurl}">Home</a></button>
+    <button><a href="/">Home</a></button>
     <br>
     `
   }
@@ -311,7 +320,7 @@ app.get('/:src/:id', (req, res) =>{
 
 </html>`)
 })
-app.listen(4000)
+app.listen(5000)
 
   
 
