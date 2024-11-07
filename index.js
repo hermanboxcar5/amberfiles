@@ -72,7 +72,7 @@ app.get("/api/fetch/:file", async (req, res)=>{
   let exists = await filecheck(filename)
   //exists done
   if(exists){
-    let data = await fs.readFile(`serve/meta/${filename}.json`, "utf8")
+    let data = await fs.readFile(`${root}/serve/meta/${filename}.json`, "utf8")
     data = JSON.parse(data)
     if(data.locked){
       if(req.headers.authentication){
@@ -81,16 +81,16 @@ app.get("/api/fetch/:file", async (req, res)=>{
         userpass = userpass.slice(7)
         userpass = hash(atob(userpass))
         if(userpass===hashedpassword){
-          res.sendFile(`${__dirname}/serve/files/${filename}.${data.extension || data.filetype}`)
+          res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
         } else {
-          res.sendFile(`${__dirname}/auth.html`)
+          res.sendFile(`${root}/auth.html`)
         }
       } else {
         res.sendFile(`${root}/auth2.html`)
       }
       
     } else {
-      res.sendFile(`${__dirname}/serve/files/${filename}.${data.extension || data.filetype}`)
+      res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
     }
   } else {
     res.status(404).end("ERROR 404: File not found. This should absolutely NOT happen. If it did, go find whoever made this and show this to them...")
