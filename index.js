@@ -73,7 +73,9 @@ app.get("/api/fetch/:file", async (req, res)=>{
   //exists done
   if(exists){
     let data = await fs.readFile(`${root}/serve/meta/${filename}.json`, "utf8")
+    console.log(data)
     data = JSON.parse(data)
+    console.log(data)
     if(data.locked){
       if(req.headers.authentication){
         let hashedpassword = hash(data.password)
@@ -89,10 +91,8 @@ app.get("/api/fetch/:file", async (req, res)=>{
         res.sendFile(`${root}/auth2.html`)
       }
       
-    } else if (data) {
+    } else{
       res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
-    } else {
-      res.sendFile(`${root}/auth2.html`)
     }
   } else {
     res.status(404).end("ERROR 404: File not found. This should absolutely NOT happen. If it did, go find whoever made this and show this to them...")
