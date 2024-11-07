@@ -76,18 +76,23 @@ app.get("/api/fetch/:file", async (req, res)=>{
     console.log(data)
     data = JSON.parse(data)
     console.log(data)
+    console.log(data.locked)
     if(data.locked){
+      console.log("THIS IS LOCKED")
       if(req.headers.authentication){
+        console.log("AUTH EXISTS")
         let hashedpassword = hash(data.password)
         let userpass = req.headers.authentication
         userpass = userpass.slice(7)
         userpass = hash(atob(userpass))
+        console.log(userpass, hashedpassword)
         if(userpass===hashedpassword){
           res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
         } else {
           res.sendFile(`${root}/auth.html`)
         }
       } else {
+        console.log("AUTH DOES NOT WORK")
         res.sendFile(`${root}/auth2.html`)
       }
       
