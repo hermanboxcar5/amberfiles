@@ -89,13 +89,16 @@ app.get("/api/fetch/:file", async (req, res)=>{
         if(userpass===hashedpassword){
           console.log("Granted auth")
           res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
+          return;
         } else {
           console.log("Granted auth? nope")
           res.sendFile(`${root}/auth.html`)
+          return;
         }
       } else {
         console.log("AUTH DOES NOT WORK")
         res.sendFile(`${root}/auth2.html`)
+        return;
       }
       
     } else{
