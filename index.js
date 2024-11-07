@@ -89,8 +89,10 @@ app.get("/api/fetch/:file", async (req, res)=>{
         res.sendFile(`${root}/auth2.html`)
       }
       
-    } else {
+    } else if (data) {
       res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
+    } else {
+      res.sendFile(`${root}/auth2.html`)
     }
   } else {
     res.status(404).end("ERROR 404: File not found. This should absolutely NOT happen. If it did, go find whoever made this and show this to them...")
