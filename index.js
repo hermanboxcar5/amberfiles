@@ -102,6 +102,7 @@ app.get("/api/fetch/:file", async (req, res)=>{
       }
       
     } else{
+      console.log("AUTH is failing")
       res.sendFile(`${root}/serve/files/${filename}.${data.extension || data.filetype}`)
     }
   } else {
