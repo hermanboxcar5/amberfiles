@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa&family=Inter:wght@300&family=Work+Sans:wght@400;500&display=swap');
+    body, div, h1, input, button {
+      font-family:'Inter', sans-serif;
+    }
+    iframe {
+    width: 95%;
+    height:80vh;
+    border:none;
+    margin-bottom:0px;
+    padding:0px;
+    }
+    button {
+    background-color:#242526ff;
+    border: none;
+    margin:5px;
+    padding:5px;
+    color:white;
+    border-radius:20px;
+    font-size:20px;
+    }
+    a {
+    color:inherit;
+    text-decoration:none;
+    }
+    .description {
+      flex:3;
+      background-color:#242526ff; 
+      border-radius: 20px;
+      width:20%;
+      min-width:20%;
+      height:calc(80vh + 30px);
+      padding:20px;
+      margin: 0 auto;
+      color:white;
+      text-align:left;
+      overflow-y:auto;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .description::-webkit-scrollbar {
+      display: none;
+    }
+    .desc{
+        text-align:left;
+        align-items:left;
+        align-content:left;
+        align-self:left;
+    }
+    .headbar {
+      background-color:#242526ff; 
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      height:50px;
+      width:95%;
+      margin: 0 auto;
+      color:white;
+    }
+    .bottombar {
+      background-color:#242526ff; 
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      height:20px;
+      width:95%;
+      font-size:0px;
+      margin: 0px auto;
+      margin-top:0px;
+    }
+    .innertxt {
+      display:flex; 
+      align-items: center; 
+      width:100%;
+      color:black; 
+      border-radius:5px; 
+      height:30px; 
+      padding:3px; 
+      padding-left:10px; 
+      padding-right:10px; 
+      overflow-x:auto; 
+      overflow-y:hidden; 
+      background-color:white;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+      max-width:100%;
+      transition: all .2s ease-in-out;
+    }
+    .innertxt::-webkit-scrollbar {
+      display: none;
+    }
+    .innertxt:hover {
+      background-color:#EEEEEE
+    }
+    .sbutton {
+      border:none;
+      background-color:inherit;
+      border-radius:5px;
+      padding:5px;
+      height:35px;
+      width:35px;
+      transition: all .2s ease-in-out;
+    }
+    .sbutton:hover {
+      background-color:#4D4D4D;
+    }
+    .viewer {
+        flex:7;
+        max-width:100%;
+        width:100%;
+        height:max-content;
+        font-size:0px;
+
+    }
+    .viewer > * {
+      font-size:15px
+    }
+    .flexsec {
+        width:95%;
+        max-width:95%;
+        display:flex;
+    }

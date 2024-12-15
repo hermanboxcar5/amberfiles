@@ -1,8 +1,9 @@
 {
     "title":"Sample PDF",
-    "locked":true,
+    "locked":false,
     "password":"syndicate",
     "filetype":"pdf",
-    "extension":"pdf"
+    "extension":"pdf",
+    "description":"A sample PDF to view for testing purposes only"
 }
 
